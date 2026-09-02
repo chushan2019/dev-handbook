@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>dev-handbook · 个人开发工具手册库</title>
+<style>
+:root{
+  --bg:#f8fafc;--ink:#0f172a;--muted:#55657b;--rule:#dbe2ec;
+  --accent:#2563eb;--accent2:#16a34a;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0;background:linear-gradient(180deg,#f8fafc 0,#f1f5f9 100%);
+  color:var(--ink);line-height:1.75;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+.wrap{max-width:880px;margin:0 auto;padding:48px 24px 96px;}
+header.hero{padding:40px 36px 32px;border-radius:20px;color:#fff;
+  background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 62%,#2563eb 155%);
+  box-shadow:0 10px 28px rgba(15,23,42,.07);position:relative;overflow:hidden;}
+header.hero h1{margin:0 0 10px;font-size:30px;font-weight:800;letter-spacing:-.01em;}
+header.hero p{margin:0;color:#dbeafe;font-size:16px;}
+.kicker{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;letter-spacing:.08em;
+  text-transform:uppercase;color:#bfdbfe;font-weight:700;margin:0 0 10px;}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:22px 24px;
+  margin:20px 0;box-shadow:0 6px 18px rgba(15,23,42,.04);}
+.card:hover{border-color:var(--accent);}
+.card h2{margin:0 0 8px;font-size:19px;font-weight:800;}
+.card h2 a{color:var(--ink);text-decoration:none;}
+.card h2 a:hover{color:var(--accent);}
+.card .meta{font-size:13px;color:var(--muted);margin:0;}
+.tag{display:inline-block;font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:700;
+  background:#eff6ff;color:var(--accent);padding:2px 8px;border-radius:999px;margin-right:6px;}
+.tag.done{background:#f0fdf4;color:var(--accent2);}
+.footer{margin-top:40px;text-align:center;color:var(--muted);font-size:13px;}
+.footer a{color:var(--accent);text-decoration:none;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <p class="kicker">Dev Handbook · 参考手册</p>
+    <h1>个人开发工具手册库</h1>
+    <p>收录日常开发中反复查阅的技术手册与速查卡，按主题组织。</p>
+  </header>
+
+  <div class="card">
+    <h2><a href="git/git-branch-worktree-guide.html">Git 分支与 Worktree 完全指南</a></h2>
+    <p class="meta"><span class="tag done">v1.0</span><span class="tag">git</span>讲清分支的本质、何时开分支、分支与 Worktree 如何分工，以及七张可视化分支演进图。</p>
+  </div>
+
+  <footer class="footer">
+    本地仓库：<code>~/vibecoding/dev-handbook</code> · 源：<a href="https://github.com/chushan2019/dev-handbook">chushan2019/dev-handbook</a>
+  </footer>
+</div>
+</body>
+</html>
