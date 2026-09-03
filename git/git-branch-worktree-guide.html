@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Git 分支与 Worktree 完全指南</title>
+<title>Git 分支、工作区与 Worktree 完全指南</title>
 <style>
 :root{
   --bg:#f8fafc;
@@ -145,12 +145,12 @@ section[id]{scroll-margin-top:24px}
 <div class="wrap">
 
 <header class="hero">
-  <p class="kicker">Git Branch &amp; Worktree · 参考手册</p>
-  <h1>Git 分支与 Worktree 完全指南</h1>
-  <p class="lead">一份同时面向<strong>入门者</strong>和<strong>进阶者</strong>的日常查询手册：讲清分支的本质、什么时候该开分支、分支与 Worktree 如何分工，以及七张可视化分支演进图。</p>
+  <p class="kicker">Git 核心概念 · 参考手册</p>
+  <h1>Git 分支、工作区与 Worktree 完全指南</h1>
+  <p class="lead">一份同时面向<strong>入门者</strong>和<strong>进阶者</strong>的日常查询手册：讲清三个工作区如何让改动变成提交、分支的本质、什么时候该开分支、分支与 Worktree 如何分工，以及多张可视化图解。</p>
 </header>
 
-<nav class="toc" aria-label="文档目录"><strong>阅读导航</strong><a href="#s1">01 分支是什么</a><a href="#s2">02 Commit 与 HEAD</a><a href="#s3">03 何时建分支</a><a href="#s4">04 合并方式</a><a href="#s5">05 Worktree</a><a href="#s6">06 图解推演</a><a href="#s7">07 命令速查</a><a href="#s8">08 常见坑</a><a href="#s9">09 修订记录</a></nav>
+<nav class="toc" aria-label="文档目录"><strong>阅读导航</strong><a href="#s1">01 分支是什么</a><a href="#s2">02 Commit 与 HEAD</a><a href="#s3">03 何时建分支</a><a href="#s4">04 合并方式</a><a href="#s5">05 Worktree</a><a href="#s6">06 图解推演</a><a href="#s7">07 命令速查</a><a href="#s8">08 常见坑</a><a href="#s9">09 修订记录</a><a href="#s10">10 三个工作区</a></nav>
 <div class="tldr">
   <h2>五分钟速览（核心结论）</h2>
   <ol>
@@ -158,6 +158,7 @@ section[id]{scroll-margin-top:24px}
     <li><strong>HEAD</strong> 是指向「当前所在分支」的特殊指针，它决定你现在到底在修哪一条线。</li>
     <li><strong>默认合并规则</strong>：main 没动 → <mark class="key">fast-forward（快进，无 merge commit）</mark>；main 也动了 → <mark class="key">三方合并（产生 merge commit）</mark>。</li>
     <li><strong>分支解决「人与人如何并行」</strong>；<strong>Worktree 解决「一个人如何同时高效处理多件事」</strong>——两者不是替代关系。</li>
+    <li><strong>三个工作区</strong>：一次改动要依次经过「工作区 → 暂存区（<code>git add</code>）→ 本地仓库（<code>git commit</code>）」，且 <code>git commit</code> 只提交暂存区里的内容。</li>
   </ol>
 </div>
 
@@ -628,6 +629,9 @@ release/v1.2.0      <span class="cm"># 发布分支</span></pre>
   <table>
     <thead><tr><th>修订位置</th><th>修订内容摘要</th><th>修订理由</th></tr></thead>
     <tbody>
+      <tr><td>新增「10 三个工作区」整章</td><td>用 <code>foo.txt</code>「创建→修改→add→commit」的文件旅程引入三个工作区；配「四区域总览图、文件旅程图、三步走状态图、对象模型图」共四张；用「摄影布景 + 购物车」双比喻讲透暂存区；列出五个常见异常（忘 add、add 后又改、误 add、commit -a 漏新文件、reset --hard）各自的后果与补救；附 blob·tree·commit 进阶与 9 条命令速查补充。</td><td>原手册只覆盖「分支与 Worktree」，缺少「一次改动如何变成一次提交」这一更基础、且是理解 commit/分支的前置概念。</td></tr>
+      <tr><td>标题与导读（hero）</td><td>主标题由「Git 分支与 Worktree 完全指南」升级为「Git 分支、工作区与 Worktree 完全指南」，导读语同步补充「三个工作区」。</td><td>内容范围新增「工作区」主题，标题需与之呼应。</td></tr>
+      <tr><td>版本号</td><td>v1.0 → v1.1</td><td>新增整章属向后兼容的增量升级，按版本策略升小版本。</td></tr>
       <tr><td>04 合并的四种方式表格 · rebase 行</td><td>在「历史效果」和「适用场景」两列补充了哈希改变的实际后果：已 push 的分支需 force push，会影响其他协作者；适用场景限定为「本地未共享的分支」。</td><td>原表格只提「重写历史」，未说明重写的代价，读者可能低估风险。</td></tr>
       <tr><td>场景 4 · 三方合并</td><td>新增 warn callout：当 main 和 feature 修改同一文件同一区域时，会产生合并冲突，需手动解决。</td><td>原文只展示了合并成功的结果图，未提及冲突这一最常见的异常情况。</td></tr>
       <tr><td>场景 5 · rebase</td><td>新增 warn callout：详细说明哈希改变的实际后果——force push 导致他人本地分叉、引用旧哈希的操作失效；同时说明纯本地 rebase 是安全的。</td><td>原文只说「哈希改变」但未解释后果，这是 rebase 最大的风险点，必须讲清。</td></tr>
@@ -639,8 +643,172 @@ release/v1.2.0      <span class="cm"># 发布分支</span></pre>
   </div>
 </section>
 
+<section id="s10">
+  <h2 class="sec"><span class="no">10</span>三个工作区：你的改动如何变成一次提交</h2>
+  <p class="gist">改动要经过「工作区 → 暂存区 → 本地仓库」三站，<code>git add</code> 和 <code>git commit</code> 只是把内容在这三站之间搬运。</p>
+
+  <p>前面你已经知道：<mark class="key">commit 是不可变的快照</mark>、<mark class="key">分支是指针</mark>。这一节回答一个更基础的问题——<strong>那么一个快照，到底是怎么「拍」出来的？</strong>答案就藏在 Git 的三个工作区里。</p>
+
+  <h3 class="sub">10.1 从一个 <code>foo.txt</code> 看清三个区域</h3>
+  <p>假设你新建了一个文件 <code>foo.txt</code>，写下一行内容。在你把它「提交」之前，它会依次经过三个地方：</p>
+  <ol>
+    <li><mark class="key">工作区（Working Directory）</mark>：你电脑上真正打开、编辑的那个 <code>foo.txt</code>。新建后它只在这里，Git 还不知道它（此时叫 <mark class="key">未跟踪 untracked</mark>）。</li>
+    <li><mark class="key">暂存区（Staging Area / Index）</mark>：执行 <code>git add foo.txt</code> 后，Git 把它的内容「登记」进暂存区，打算纳入下一次提交。这一步可以反复调整增删。</li>
+    <li><mark class="key">本地仓库（Repository，就是 <code>.git</code> 目录）</mark>：执行 <code>git commit</code> 后，暂存区的内容被打包成一个 commit，永久记录进历史。</li>
+  </ol>
+  <p>如果还有远程仓库（GitHub），<code>git push</code> 再把它推到云端，供别人拉取。下面的图把这条「单向流水线」画了出来。</p>
+
+  <figure class="diagram">
+    <figcaption><b>图 10-1</b>：三个工作区 + 远程。改动沿「<b>git add → git commit → git push</b>」从左往右单向流动。</figcaption>
+    <svg viewBox="0 0 800 150" role="img" aria-label="三个工作区总览">
+      <rect x="16" y="52" width="145" height="70" rx="12" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+      <text x="88.5" y="82" font-size="14" font-weight="700" text-anchor="middle" fill="#1d4ed8">工作区</text>
+      <text x="88.5" y="104" font-size="11" text-anchor="middle" fill="#64748b">Working Directory</text>
+      <rect x="217" y="52" width="145" height="70" rx="12" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.5"/>
+      <text x="289.5" y="82" font-size="14" font-weight="700" text-anchor="middle" fill="#166534">暂存区</text>
+      <text x="289.5" y="104" font-size="11" text-anchor="middle" fill="#64748b">Staging Area</text>
+      <rect x="418" y="52" width="145" height="70" rx="12" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+      <text x="490.5" y="82" font-size="14" font-weight="700" text-anchor="middle" fill="#92400e">本地仓库</text>
+      <text x="490.5" y="104" font-size="11" text-anchor="middle" fill="#64748b">.git / Repository</text>
+      <rect x="619" y="52" width="145" height="70" rx="12" fill="#f5f3ff" stroke="#9333ea" stroke-width="1.5"/>
+      <text x="691.5" y="82" font-size="14" font-weight="700" text-anchor="middle" fill="#6b21a8">远程仓库</text>
+      <text x="691.5" y="104" font-size="11" text-anchor="middle" fill="#64748b">Remote / GitHub</text>
+      <line x1="161" y1="87" x2="214" y2="87" stroke="#2563eb" stroke-width="2" marker-end="url(#arr-blue)"/>
+      <text x="187" y="42" font-size="12" font-family="var(--mono)" text-anchor="middle" fill="#2563eb">git add</text>
+      <line x1="362" y1="87" x2="415" y2="87" stroke="#2563eb" stroke-width="2" marker-end="url(#arr-blue)"/>
+      <text x="388" y="42" font-size="12" font-family="var(--mono)" text-anchor="middle" fill="#2563eb">git commit</text>
+      <line x1="563" y1="87" x2="616" y2="87" stroke="#2563eb" stroke-width="2" marker-end="url(#arr-blue)"/>
+      <text x="589" y="42" font-size="12" font-family="var(--mono)" text-anchor="middle" fill="#2563eb">git push</text>
+    </svg>
+  </figure>
+
+  <div class="callout">
+    <p><strong>反向也走得通：</strong>内容不仅能「往前进」，也能「往后退」。<code>git checkout</code> / <code>git reset</code> 把仓库的内容恢复到工作区；<code>git fetch</code> / <code>git pull</code> 把远程的内容拉到本地仓库。理解这条「双向车道」，后面讲撤销和同步就都通了。</p>
+  </div>
+
+  <h3 class="sub">10.2 暂存区到底存了什么（两个比喻）</h3>
+  <p>暂存区是新手最容易卡住的地方。先用两个比喻帮你看透它：</p>
+  <ul>
+    <li><strong>比喻① · 摄影布景：</strong><code>git add</code> 像把要拍的东西<strong>摆进画面（布景）</strong>，此时还没定格；<code>git commit</code> 才是<strong>按下快门</strong>，把画面固化成一张照片（快照）。在按快门前，你可以随意调整布景，增删都没关系。</li>
+    <li><strong>比喻② · 购物车：</strong><code>git add</code> 是把商品<strong>放进购物车</strong>，<code>git commit</code> 是<strong>结账</strong>。你可以只挑部分商品结账（选择性提交），没放进购物车的不会被买走。</li>
+  </ul>
+  <div class="callout warn">
+    <p><strong>一个必须记住的点：</strong><code>git commit</code> 只提交<mark class="key">暂存区里的内容</mark>，<strong>不包含</strong>工作区里那些「改了但没 add」的改动。这是新手「以为提交了、其实没提交」的万恶之源（见 10.4 异常 1）。</p>
+  </div>
+  <p><strong>为什么要有暂存区？</strong>它给了你「<mark class="key">选择性提交</mark>」的自由：比如你同时改了 <code>foo.txt</code> 和 <code>bar.txt</code>，但只想先提交 <code>foo.txt</code>，就只执行 <code>git add foo.txt</code> 再 <code>git commit</code>，把不相干的改动拆成两个语义清晰的提交。</p>
+
+  <h3 class="sub">10.3 一张图看清「文件如何变成提交」</h3>
+  <p>把 <code>foo.txt</code> 的完整旅程串起来：左边是它一路经历的实体，最底是一串 commit 链条，新提交 <code>c4</code> 接到链条头部，<code>main</code> 指针跟着前移。</p>
+  <figure class="diagram">
+    <figcaption><b>图 10-2</b>：foo.txt 的旅程 —— 工作区文件 → blob 快照 → 新 commit 接入链条。</figcaption>
+    <svg viewBox="0 0 720 360" role="img" aria-label="文件旅程">
+      <rect x="260" y="16" width="200" height="56" rx="10" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+      <text x="360" y="42" font-size="14" font-weight="700" text-anchor="middle" fill="#1d4ed8">foo.txt</text>
+      <text x="360" y="62" font-size="11.5" text-anchor="middle" fill="#64748b">在工作区：改了一行</text>
+      <line x1="360" y1="72" x2="360" y2="100" stroke="#2563eb" stroke-width="2" marker-end="url(#arr-blue)"/>
+      <text x="376" y="90" font-size="12" font-family="var(--mono)" fill="#2563eb">git add</text>
+      <rect x="260" y="108" width="200" height="56" rx="10" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.5"/>
+      <text x="360" y="134" font-size="14" font-weight="700" text-anchor="middle" fill="#166534">blob b1</text>
+      <text x="360" y="154" font-size="11.5" text-anchor="middle" fill="#64748b">内容快照（存入对象库）</text>
+      <rect x="500" y="118" width="200" height="56" rx="8" fill="none" stroke="#16a34a" stroke-width="1.2" stroke-dasharray="4 4"/>
+      <text x="600" y="140" font-size="12" text-anchor="middle" fill="#166534">暂存区里记录：</text>
+      <text x="600" y="160" font-size="12" font-family="var(--mono)" text-anchor="middle" fill="#16a34a">foo.txt → b1</text>
+      <line x1="460" y1="146" x2="500" y2="146" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="4 4"/>
+      <line x1="360" y1="164" x2="360" y2="248" stroke="#2563eb" stroke-width="2" marker-end="url(#arr-blue)"/>
+      <text x="376" y="210" font-size="12" font-family="var(--mono)" fill="#2563eb">git commit</text>
+      <circle cx="120" cy="290" r="15" fill="#fff" stroke="#94a3b8" stroke-width="2"/><text x="120" y="295" class="ct">c1</text>
+      <circle cx="200" cy="290" r="15" fill="#fff" stroke="#94a3b8" stroke-width="2"/><text x="200" y="295" class="ct">c2</text>
+      <circle cx="280" cy="290" r="15" fill="#fff" stroke="#94a3b8" stroke-width="2"/><text x="280" y="295" class="ct">c3</text>
+      <circle cx="360" cy="290" r="15" fill="#fef3c7" stroke="#d97706" stroke-width="2"/><text x="360" y="295" class="ct">c4</text>
+      <line x1="135" y1="290" x2="183" y2="290" stroke="#cbd5e1" stroke-width="2" marker-end="url(#arr)"/>
+      <line x1="215" y1="290" x2="263" y2="290" stroke="#cbd5e1" stroke-width="2" marker-end="url(#arr)"/>
+      <line x1="295" y1="290" x2="343" y2="290" stroke="#cbd5e1" stroke-width="2" marker-end="url(#arr)"/>
+      <text class="bl" x="360" y="256" fill="#2563eb">main</text>
+      <rect x="332" y="332" width="56" height="22" rx="11" fill="#334155"/>
+      <text class="pill-text" x="360" y="347">HEAD</text>
+    </svg>
+  </figure>
+
+  <h3 class="sub">10.4 正常三步走（以 <code>foo.txt</code> 为例）</h3>
+  <p>把上面三张图压缩成「三步」，每一步后三个区域的状态如下（<span style="color:#16a34a;font-weight:700">绿色</span> = 该区域此刻「有内容」）：</p>
+  <figure class="diagram">
+    <figcaption><b>图 10-3</b>：三步走 —— 改动像水流，从工作区逐步「点亮」到仓库。</figcaption>
+    <svg viewBox="0 0 760 210" role="img" aria-label="三步走状态图">
+      <text x="130" y="26" font-size="13" font-weight="700" text-anchor="middle" fill="#0f172a">阶段 1 · 改完未 add</text>
+      <text x="370" y="26" font-size="13" font-weight="700" text-anchor="middle" fill="#0f172a">阶段 2 · add 之后</text>
+      <text x="610" y="26" font-size="13" font-weight="700" text-anchor="middle" fill="#0f172a">阶段 3 · commit 之后</text>
+      <rect x="45" y="44" width="170" height="40" rx="8" fill="#bbf7d0" stroke="#16a34a" stroke-width="1.5"/><text x="130" y="69" font-size="12.5" text-anchor="middle" fill="#166534">工作区：有改动</text>
+      <rect x="45" y="92" width="170" height="40" rx="8" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/><text x="130" y="117" font-size="12.5" text-anchor="middle" fill="#64748b">暂存区：空</text>
+      <rect x="45" y="140" width="170" height="40" rx="8" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/><text x="130" y="165" font-size="12.5" text-anchor="middle" fill="#64748b">仓库：无新提交</text>
+      <rect x="285" y="44" width="170" height="40" rx="8" fill="#bbf7d0" stroke="#16a34a" stroke-width="1.5"/><text x="370" y="69" font-size="12.5" text-anchor="middle" fill="#166534">工作区：有改动</text>
+      <rect x="285" y="92" width="170" height="40" rx="8" fill="#bbf7d0" stroke="#16a34a" stroke-width="1.5"/><text x="370" y="117" font-size="12.5" text-anchor="middle" fill="#166534">暂存区：已暂存</text>
+      <rect x="285" y="140" width="170" height="40" rx="8" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/><text x="370" y="165" font-size="12.5" text-anchor="middle" fill="#64748b">仓库：无新提交</text>
+      <rect x="525" y="44" width="170" height="40" rx="8" fill="#bbf7d0" stroke="#16a34a" stroke-width="1.5"/><text x="610" y="69" font-size="12.5" text-anchor="middle" fill="#166534">工作区：已提交</text>
+      <rect x="525" y="92" width="170" height="40" rx="8" fill="#bbf7d0" stroke="#16a34a" stroke-width="1.5"/><text x="610" y="117" font-size="12.5" text-anchor="middle" fill="#166534">暂存区：一致</text>
+      <rect x="525" y="140" width="170" height="40" rx="8" fill="#bbf7d0" stroke="#16a34a" stroke-width="1.5"/><text x="610" y="165" font-size="12.5" text-anchor="middle" fill="#166534">仓库：新增 commit</text>
+    </svg>
+  </figure>
+
+  <h3 class="sub">10.5 五个常见异常（每个都有后果与补救）</h3>
+  <p>异常几乎都源于「三个区域不同步」。看懂这张表，就懂了一大半 <code>git status</code> 的报错。</p>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>异常</th><th>现象</th><th>后果</th><th>补救</th></tr></thead>
+    <tbody>
+      <tr><td><strong>1. 忘了 add 就 commit</strong></td><td>改完 <code>foo.txt</code> 直接 <code>git commit</code></td><td>commit 里没有这次改动，你以为提交了，仓库其实还是旧版</td><td><code>git add foo.txt</code> 后 <code>git commit --amend</code> 补进去（或再提交一次）</td></tr>
+      <tr><td><strong>2. add 之后又改了文件</strong></td><td><code>git add foo.txt</code> 后又改了一行</td><td>工作区比暂存区新，commit 只含 add 时的旧内容，新改动被漏掉</td><td>再次 <code>git add foo.txt</code></td></tr>
+      <tr><td><strong>3. 误 add 了不该提交的文件</strong></td><td><code>git add .</code> 把含密码的配置也加进去</td><td>会混进下一次 commit，甚至推送到远程泄露</td><td><code>git reset HEAD &lt;file&gt;</code> 或 <code>git rm --cached &lt;file&gt;</code>，再补进 <code>.gitignore</code></td></tr>
+      <tr><td><strong>4. 用 <code>commit -a</code> 偷懒漏了新文件</strong></td><td><code>git commit -am "…"</code></td><td><code>-a</code> 只自动暂存「已跟踪」文件的改动，<mark class="key">新建的未跟踪文件不会进 commit</mark></td><td>新文件必须显式 <code>git add</code></td></tr>
+      <tr><td><strong>5. <code>reset --hard</code> 删光未提交改动</strong></td><td><code>git reset --hard HEAD</code></td><td>工作区未提交的改动被<mark class="risk">永久删除，无法恢复</mark></td><td>无法补救；执行前先 <code>git status</code> 确认，或用 <code>git stash</code> 备份</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3 class="sub">10.6 进阶必读：blob · tree · commit 对象模型</h3>
+  <p>如果你想知道「暂存区里那份东西」到底是什么，就看这一小节。Git 会把每次提交拆成三层对象（外层包内层）：</p>
+  <figure class="diagram">
+    <figcaption><b>图 10-4</b>：一次 commit 的嵌套结构 —— commit 包含 tree，tree 包含 blob。</figcaption>
+    <svg viewBox="0 0 540 230" role="img" aria-label="对象模型">
+      <rect x="40" y="20" width="460" height="190" rx="14" fill="#fef3c7" stroke="#d97706" stroke-width="2"/>
+      <text x="270" y="48" font-size="14" font-weight="700" text-anchor="middle" fill="#92400e">commit（一次提交）</text>
+      <text x="270" y="66" font-size="11" text-anchor="middle" fill="#b45309">记录：tree + 父提交 + 作者 + 提交信息</text>
+      <rect x="100" y="82" width="340" height="96" rx="12" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+      <text x="270" y="108" font-size="13" font-weight="700" text-anchor="middle" fill="#1d4ed8">tree（目录结构）</text>
+      <text x="270" y="125" font-size="11" text-anchor="middle" fill="#64748b">记录：文件名 + 指向哪个 blob</text>
+      <rect x="180" y="136" width="180" height="34" rx="8" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.5"/>
+      <text x="270" y="158" font-size="12.5" font-weight="700" text-anchor="middle" fill="#166534">blob（文件内容）</text>
+    </svg>
+  </figure>
+  <ul>
+    <li><strong>blob</strong>：<code>git add</code> 时，Git 把文件内容（不含文件名）算哈希，存入对象库，成了 blob。</li>
+    <li><strong>tree</strong>：<code>git commit</code> 时，把一堆 blob 按目录结构组织成一个 tree。</li>
+    <li><strong>commit</strong>：再包一层 commit，指向 tree，并记录父提交、作者、时间、提交信息。</li>
+  </ul>
+  <div class="callout">
+    <p><strong>这也解释了「为什么切换分支那么快」：</strong>不同 commit 会各自指向自己的 tree，但<mark class="key">内容没变的 blob 是共享同一个</mark>的——Git 不会为没变化的文件重复存内容。所以切换分支、创建分支都极快，因为底层几乎没有「搬文件」，只是换指针。</p>
+  </div>
+
+  <h3 class="sub">10.7 命令速查补充</h3>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>命令</th><th>作用</th></tr></thead>
+    <tbody>
+      <tr><td><code>git status</code></td><td>查看三区状态：哪些改动未暂存、哪些已暂存</td></tr>
+      <tr><td><code>git add &lt;file&gt;</code></td><td>把指定文件的改动加入暂存区</td></tr>
+      <tr><td><code>git add .</code></td><td>暂存当前目录所有改动（含新文件）</td></tr>
+      <tr><td><code>git diff</code></td><td>对比「工作区 vs 暂存区」（还没 add 的改动）</td></tr>
+      <tr><td><code>git diff --staged</code></td><td>对比「暂存区 vs 仓库」（即将提交的改动）</td></tr>
+      <tr><td><code>git reset HEAD &lt;file&gt;</code></td><td>把文件从暂存区撤回到工作区（不改文件内容）</td></tr>
+      <tr><td><code>git rm --cached &lt;file&gt;</code></td><td>从暂存区/仓库移除，但保留工作区文件</td></tr>
+      <tr><td><code>git commit</code></td><td>提交暂存区内容</td></tr>
+      <tr><td><code>git commit -a</code></td><td>提交所有「已跟踪」文件的改动（不含新文件） <mark class="risk">⚠ 易漏新文件</mark></td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
 <footer class="footer">
-  本手册为学习用途整理，示例基于 Git 2.23+（<code>git switch</code> 可用）。分支图均按「时间从左到右」绘制。<a href="#">回到顶部</a>
+  本手册为学习用途整理，示例基于 Git 2.23+（<code>git switch</code> 可用）。分支图按「时间从左到右」绘制，工作区图用于讲清内容流向，均为示意图。<a href="#">回到顶部</a>
 </footer>
 
 </div><!-- /.wrap -->

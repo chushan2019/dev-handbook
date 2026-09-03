@@ -6,7 +6,7 @@
 
 | 主题 | 文件 | 版本 | 状态 |
 |---|---|---|---|
-| Git 分支与 Worktree | [git/git-branch-worktree-guide.html](git/git-branch-worktree-guide.html) | v1.0 | ✅ 已定稿 |
+| Git 分支、工作区与 Worktree | [git/git-branch-worktree-guide.html](git/git-branch-worktree-guide.html) | v1.1 | ✅ 已定稿 |
 
 ## 目录结构
 
